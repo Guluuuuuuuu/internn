@@ -13,8 +13,8 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        // 允许跨域的源
-        config.addAllowedOrigin("http://localhost:8080");
+        // 允许所有来源
+        config.addAllowedOrigin("*");  // 或者使用 setAllowedOrigins(Arrays.asList("*"))
         
         // 允许跨域的请求头
         config.addAllowedHeader("*");
@@ -23,7 +23,7 @@ public class CorsConfig {
         config.addAllowedMethod("*");
         
         // 允许携带cookie信息
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false);  // 如果设置为 true，则不能使用 "*" 作为允许的来源
         
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);

@@ -3,9 +3,11 @@ package com.gulu.internship07.controller;
 import com.gulu.internship07.repository.StudentRepository;
 import com.gulu.internship07.repository.CompanyRepository;
 import com.gulu.internship07.repository.SchoolRepository;
+import com.gulu.internship07.repository.AdminRepository;
 import com.gulu.internship07.entity.Student;
 import com.gulu.internship07.entity.Company;
 import com.gulu.internship07.entity.School;
+import com.gulu.internship07.entity.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,9 @@ public class LoginController {
     @Autowired
     private SchoolRepository schoolRepository;
 
+    @Autowired
+    private AdminRepository adminRepository;
+
     @PostMapping
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
         String username = loginData.get("username");
@@ -39,6 +44,15 @@ public class LoginController {
             String name = null;
 
             switch (role) {
+                case "admin":
+                    Admin admin = adminRepository.findByUsername(username);
+                    if (admin != null && admin.getPassword().equals(password)) {
+                        isAuthenticated = true;
+                        userId = admin.getId();
+                        name = admin.getName();
+                    }   
+                    break;
+
                 case "student":
                     Student student = studentRepository.findByUsername(username);
                     if (student != null && student.getPassword().equals(password)) {
