@@ -24,15 +24,19 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/",
                     "/*.html",
+                    "/admin",      // 添加后台管理路由
+                    "/student",    // 添加学生后台路由
+                    "/company",    // 添加企业后台路由
+                    "/school",     // 添加学校后台路由
                     "/recommend",
                     "/recommend.html",
                     "/components/**",
                     "/images/**",
                     "/api/latest-jobs",
                     "/api/jobs/search",
-                    "/api/register",  // 添加注册接口
-                    "/api/login",     // 添加登录接口
-                    "/api/jobs/**"    // 添加其他 job 相关接口
+                    "/api/register",
+                    "/api/login",
+                    "/api/jobs/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             );
