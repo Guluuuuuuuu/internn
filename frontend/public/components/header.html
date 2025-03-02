@@ -1,0 +1,248 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<div class="navbar">
+    <div class="nav-brand">Online Internship</div>
+    <nav class="nav-menu">
+        <a href="/home.html" class="nav-item">首页</a>
+        <a href="/recommend.html" class="nav-item">岗位推荐</a>
+        <a href="/progress" class="nav-item">实习进度</a>
+    </nav>
+    <div class="user-info" id="userInfo">
+        <div class="user-container" id="userContainer">
+            <img id="userAvatar" class="avatar" src="/images/default-avatar.png" alt="用户头像">
+            <span id="userName" class="user-name">未登录</span>
+        </div>
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="#" class="dropdown-item" id="personalCenter">个人中心</a>
+            <a href="#" class="dropdown-item" id="logoutBtn">退出登录</a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Navbar 样式 */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #CA4499;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-brand {
+    color: white;
+    font-size: 33px;
+    font-weight: bold;
+    text-decoration: none;
+    margin-right: 40px;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-item {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    font-size: 17px;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 用户信息样式 */
+.user-info {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-left: auto;
+}
+
+.user-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+}
+
+.user-container:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.user-name {
+    color: white;
+    font-size: 17px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 8px 0;
+    min-width: 150px;
+    margin-top: 5px;
+    display: none;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 8px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+</style>
+
+<script>
+// 创建一个全局函数，供其他页面调用
+window.initializeHeader = function() {
+    initializeUserInterface();
+};
+
+// 如果是直接加载，也执行初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 确保元素都存在后再初始化
+    if (document.getElementById('userContainer')) {
+        initializeUserInterface();
+    }
+});
+
+// 用户界面初始化函数
+function initializeUserInterface() {
+    const userContainer = document.getElementById('userContainer');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const userAvatar = document.getElementById('userAvatar');
+    const userName = document.getElementById('userName');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const personalCenter = document.getElementById('personalCenter');
+
+    // 检查用户是否已登录
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+        handleLoggedInUser(userStr, {
+            userContainer,
+            dropdownMenu,
+            userAvatar,
+            userName,
+            personalCenter
+        });
+    } else {
+        handleLoggedOutUser({
+            userContainer,
+            userAvatar,
+            userName
+        });
+    }
+
+    // 添加全局事件监听器
+    addGlobalEventListeners({
+        dropdownMenu,
+        logoutBtn
+    });
+}
+
+// 处理已登录用户
+function handleLoggedInUser(userStr, elements) {
+    const user = JSON.parse(userStr);
+    const { userContainer, dropdownMenu, userAvatar, userName, personalCenter } = elements;
+
+    // 更新用户界面
+    userAvatar.src = user.image || '/images/default-avatar.png';
+    userName.textContent = user.name;
+
+    // 下拉菜单切换
+    userContainer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+    });
+
+    // 个人中心导航
+    personalCenter.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigateToUserDashboard(user.role);
+    });
+}
+
+// 处理未登录用户
+function handleLoggedOutUser(elements) {
+    const { userContainer, userAvatar, userName } = elements;
+    
+    userAvatar.src = '/images/default-avatar.png';
+    userName.textContent = '未登录';
+    
+    userContainer.addEventListener('click', () => {
+        window.location.href = '/login.html';
+    });
+}
+
+// 添加全局事件监听器
+function addGlobalEventListeners(elements) {
+    const { dropdownMenu, logoutBtn } = elements;
+
+    // 点击其他地方关闭下拉菜单
+    document.addEventListener('click', () => {
+        dropdownMenu.classList.remove('show');
+    });
+
+    // 退出登录
+    logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('user');
+        window.location.href = '/login.html';
+    });
+}
+
+// 用户仪表板导航
+function navigateToUserDashboard(role) {
+    switch (role) {
+        case 'admin':
+            window.location.href = '/#/admin';
+            break;
+        case 'student':
+            window.location.href = '/student';
+            break;
+        case 'company':
+            window.location.href = '/company';
+            break;
+        case 'school':
+            window.location.href = '/school';
+            break;
+        default:
+            window.location.href = '/';
+    }
+}
+</script> 

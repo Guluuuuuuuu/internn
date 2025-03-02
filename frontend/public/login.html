@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>实习管理系统 - 登录</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .video-container video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+
+        .login-container {
+            width: 500px;
+            margin: 300px auto;
+            padding: 50px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-bottom: 15px;  /* 添加底部间距 */
+        }
+        .btn-login:hover {
+            background-color: #0056b3;
+        }
+
+
+        /* 修改单选按钮样式 */
+    .role-group {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    flex-direction: row;  /* 确保横向排列 */
+    align-items: center;  /* 确保内容垂直居中 */
+    }
+
+    .role-option {
+    display: flex;
+    align-items: center;
+    margin: 0 15px;  /* 添加左右间距，保证元素之间有适当的间隔 */
+    }
+
+.role-option input[type="radio"] {
+    margin-right: 8px;  /* 调整单选框与文字之间的间距 */
+}
+
+.role-option label {
+    margin: 0;  /* 移除label的默认margin */
+    display: inline-block;  /* 改为内联块级显示 */
+}
+
+        .role-option input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .role-option label {
+            margin: 0;  /* 移除label的默认margin */
+            display: inline;  /* 改为内联显示 */
+        }
+
+        .register-link {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+    
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video autoplay muted loop playsinline>
+            <source src="./images/login.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="login-container">
+        <h2 style="text-align: center;">用户登录</h2>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <form id="loginForm" onsubmit="return false;">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <div class="role-group">
+                    <div class="role-option">
+                        <input type="radio" id="student" name="role" value="student" checked>
+                        <label for="student">student</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" id="admin" name="role" value="admin">
+                        <label for="admin">admin</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" id="company" name="role" value="company">
+                        <label for="company">company</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" id="school" name="role" value="school">
+                        <label for="school">school</label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn-login">登录</button>
+        </form>
+        <div class="register-link">
+            <a href="/register.html">注册新用户</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                username: formData.get('username'),
+                password: formData.get('password'),
+                role: formData.get('role')
+            };
+
+            try {
+                const response = await fetch('http://localhost:8888/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // 保存用户信息到 localStorage
+                    localStorage.setItem('user', JSON.stringify(result));
+                    
+                    Swal.fire({
+                        title: '成功！',
+                        text: '登录成功',
+                        icon: 'success',
+                        confirmButtonText: '确定'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // 登录成功后跳转到首页
+                            window.location.href = '/home.html';
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: '错误！',
+                        text: result.message || '登录失败',
+                        icon: 'error',
+                        confirmButtonText: '确定'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: '错误！',
+                    text: '登录失败：' + error.message,
+                    icon: 'error',
+                    confirmButtonText: '确定'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

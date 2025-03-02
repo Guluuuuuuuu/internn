@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>实习管理系统 - 首页</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding-top: 90px; /* 为固定头部留出空间 */
+            background-color: #f5f5f5;  /* 添加背景色 */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;  /* 确保页面填满 */
+            overflow-y: auto; /* 允许垂直滚动 */
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        /* 职位搜索区域 */
+        .search-section {
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 800px; /* 将最大宽度从 1500px 改为 800px */
+            background-color: #f5f5f5;
+            padding: 66px; /* 将 padding 从 60px 改为 30px */
+            border-radius: 5px;
+            margin-bottom: 0px;
+            margin: 0 auto; /* 居中显示 */
+        }
+
+        /* 热门职位区域 */
+        .hot-jobs {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0px;
+            margin-top: 10px;
+        }
+
+        /* 搜索区域样式 */
+       .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            max-width: 600px; /* 限制搜索框的最大宽度 */
+            margin: 0 auto; /* 居中显示 */
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 1.5px solid #b20898;
+            border-radius: 8px;
+            font-size: 19px;
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            background-color: #CA4499;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .hot-tags {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center; /* 居中显示 */
+            margin-top: 10px;
+        }
+
+        .tag {
+            padding: 5px 10px;
+            background-color: #f0f0f0;
+            border-radius: 15px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease; /* 添加过渡效果 */
+        }
+
+        .tag:hover {
+            background-color: #f69fdf;
+            color: #fff; /* 文字颜色改为白色，更醒目 */
+        }
+
+        /* 职位卡片样式 */
+        .job-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;  /* 增加圆角，与广告卡片保持一致 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;  /* 添加过渡效果 */
+            cursor: pointer;  /* 添加指针样式 */
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);  /* 向上浮动效果 */
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);  /* 增强阴影效果 */
+        }
+
+        .job-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 18px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .company {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .salary {
+            color: #f60;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .location {
+            color: #999;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .job-card .tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .job-card .tag {
+            padding: 4px 8px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .ad-section {
+            margin: 10px 0; /* 将 margin 从 20px 改为 10px */
+        }
+
+        .ad-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 1100px; 
+            margin: 0 auto;
+        }
+
+        .ad-image-card {
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .ad-image-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .ad-image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .ad-image-card a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #333;
+            margin: 30px 0 20px;
+            padding-left: 10px;
+            border-left: 4px solid #CA4499;
+        }
+
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1100px;  /* 与广告区域宽度保持一致 */
+            margin: 0 auto;
+        }
+
+        .view-more {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .view-more-btn {
+            display: inline-block;
+            padding: 10px 40px;
+            background-color: #f69fdf;
+            color: #2D1B4E;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .view-more-btn:hover {
+            background-color: #2D1B4E;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(45, 27, 78, 0.2);
+        }
+
+        /* Navbar 样式 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #CA4499;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-brand {
+            color: white;
+            font-size: 33px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-right: 40px; /* 增加与菜单项的间距 */
+
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            font-size: 17px;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 用户信息样式 */
+        .user-info {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-left: auto; /* 将用户信息推到最右边 */
+        }
+
+        .user-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .user-container:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .user-name {
+            color: white;
+            font-size: 17px; /* 增加字体大小 */
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 8px 0;
+            min-width: 150px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 8px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Footer 样式 */
+        .site-footer {
+            background-color: #2d2d2d;
+            color: #999;
+            padding: 40px 0 20px;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            padding: 0 20px;
+        }
+
+        .footer-section h3 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: normal;
+        }
+
+        .footer-section a {
+            display: block;
+            color: #999;
+            text-decoration: none;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .footer-section a:hover {
+            color: #fff;
+        }
+
+        .footer-section p {
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .service-time {
+            color: #999;
+        }
+
+        .service-phone {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 30px auto 0;
+            padding: 20px;
+            border-top: 1px solid #3d3d3d;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 12px;
+        }
+
+        .footer-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .loading, .error, .no-jobs {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .error {
+            color: #ff4444;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 引入 header -->
+    <div id="header"></div>
+    
+    <div class="main-content">
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="搜索职位、公司">
+                <button class="search-button">
+                    <i class="fas fa-search"></i>
+                    搜索
+                </button>
+            </div>
+            <div class="hot-tags">
+                热门职位：
+                <a href="#" class="tag">Java</a>
+                <a href="#" class="tag">开发</a>
+                <a href="#" class="tag">测试工程师</a>
+                <a href="#" class="tag">运维工程师</a>
+                <a href="#" class="tag">网络工程师</a>
+                <a href="#" class="tag">IT技术支持</a>
+            </div>
+        </div>
+        
+        <div class="ad-section">
+            <div class="ad-grid">
+                <div class="ad-image-card">
+                    <a href="/resume">
+                        <img src="/images/jl.png" alt="简历补充">
+                    </a>
+                </div>
+                <div class="ad-image-card">
+                    <a href="/jobs/web">
+                        <img src="/images/zl.png" alt="资料填写">
+                    </a>
+                </div>
+                <div class="ad-image-card">
+                    <a href="https://leetcode.cn">
+                        <img src="/images/ts.png" alt="提升自我">
+                    </a>
+                </div>
+                <div class="ad-image-card">
+                    <a href="/jobs/logistics">
+                        <img src="/images/jy.png" alt="经验">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="featured-jobs">
+            <h2 class="section-title">精选职位</h2>
+            <div class="jobs-grid" id="jobsGrid">
+                <!-- 职位卡片将通过 JavaScript 动态插入 -->
+            </div>
+            <div class="view-more">
+                <a href="/recommend.html" class="view-more-btn">查看更多</a>
+            </div>
+        </div>
+    </div>
+    <div id="footer"></div>
+
+    
+
+    <script>
+    $(document).ready(function() {
+        $("#header").load("/components/header.html", function() {
+            // header 加载完成后初始化
+            if (window.initializeHeader) {
+                window.initializeHeader();
+            }
+        });
+        $("#footer").load("/components/footer.html");
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const userContainer = document.getElementById('userContainer');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // 检查用户是否已登录
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            userAvatar.src = user.image || '/images/default-avatar.png';
+            userName.textContent = user.name;
+        } else {
+            userAvatar.src = '/images/default-avatar.png';
+            userName.textContent = '未登录';
+            // 未登录时点击跳转到登录页面
+            userContainer.addEventListener('click', () => {
+                window.location.href = '/login.html';
+            });
+            return; // 未登录时不添加下面的事件监听
+        }
+
+        // 显示/隐藏下拉菜单
+        userContainer.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+        });
+
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', () => {
+            dropdownMenu.classList.remove('show');
+        });
+
+        // 退出登录
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        });
+    });
+
+    // 获取并显示最新岗位
+    function loadLatestJobs() {
+        const jobsGrid = document.getElementById('jobsGrid');
+        jobsGrid.innerHTML = '<div class="loading">加载中...</div>';
+        
+        fetch('http://localhost:8888/api/latest-jobs')
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || 'Network response was not ok');
+                    });
+                }
+                return response.json();
+            })
+            .then(jobs => {
+                if (!jobs || jobs.length === 0) {
+                    jobsGrid.innerHTML = '<div class="no-jobs">暂无职位信息</div>';
+                    return;
+                }
+                
+                console.log('Received jobs:', jobs);
+                
+                jobsGrid.innerHTML = '';
+                // 限制显示数量为 6 个（两行，每行 3 个）
+                const displayJobs = jobs.slice(0, 6);
+                displayJobs.forEach(job => {
+                    const jobCard = document.createElement('div');
+                    jobCard.className = 'job-card';
+                    jobCard.innerHTML = `
+                        <h3>${job.title || '职位未知'}</h3>
+                        <p class="company">${job.companyName || '公司未知'}</p>
+                        <p class="salary">薪资：${job.salary || '面议'}</p>
+                        <p class="location">${job.location || '地点未知'}</p>
+                        <div class="tags">
+                            <span class="tag">${job.jobType || '全职'}</span>
+                            <span class="tag">${job.education || '学历不限'}</span>
+                        </div>
+                    `;
+                    // 添加点击事件
+                    jobCard.addEventListener('click', () => {
+                        window.location.href = `/job-detail.html?id=${job.id}`;
+                    });
+                    jobsGrid.appendChild(jobCard);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading jobs:', error);
+                jobsGrid.innerHTML = `<div class="error">加载失败：${error.message}</div>`;
+            });
+    }
+
+    // 添加一些样式
+    const style = document.createElement('style');
+    style.textContent = `
+        .loading, .error, .no-jobs {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .error {
+            color: #ff4444;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', loadLatestJobs);
+    </script>
+</body>
+</html> 
