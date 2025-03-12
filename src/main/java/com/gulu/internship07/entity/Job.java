@@ -27,4 +27,7 @@ public class Job {
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    private String description;
+    private String requirements;
 } 

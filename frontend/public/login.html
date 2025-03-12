@@ -193,6 +193,21 @@
                     // 保存用户信息到 localStorage
                     localStorage.setItem('user', JSON.stringify(result));
                     
+                    // 根据角色存储用户ID
+                    if (data.role === 'student') {
+                        localStorage.setItem('studentId', result.userId);
+                    } else if (data.role === 'company') {
+                        localStorage.setItem('companyId', result.userId);
+                    } else if (data.role === 'school') {
+                        localStorage.setItem('schoolId', result.userId);
+                    } else if (data.role === 'admin') {
+                        localStorage.setItem('adminId', result.userId);
+                    }
+                    
+                    // 统一存储 userId，便于通用功能使用
+                    localStorage.setItem('userId', result.userId);
+                    localStorage.setItem('userRole', data.role);
+
                     Swal.fire({
                         title: '成功！',
                         text: '登录成功',

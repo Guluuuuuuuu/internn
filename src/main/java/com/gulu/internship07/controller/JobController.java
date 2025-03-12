@@ -2,15 +2,12 @@ package com.gulu.internship07.controller;
 
 import com.gulu.internship07.entity.Job;
 import com.gulu.internship07.repository.JobRepository;
+import com.gulu.internship07.service.JobService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
@@ -22,6 +19,9 @@ public class JobController {
     
     @Autowired
     private JobRepository jobRepository;
+    
+    @Autowired
+    private JobService jobService;
     
     @GetMapping("/latest-jobs")  // 这个路径会与基础路径组合成 /api/latest-jobs
     public ResponseEntity<?> getLatestJobs() {
@@ -65,6 +65,17 @@ public class JobController {
             logger.error("Error searching jobs: ", e);
             return ResponseEntity.internalServerError()
                     .body("Error searching jobs: " + e.getMessage());
+        }
+    }
+
+    // 获取岗位详情
+    @GetMapping("/jobs/{id}")
+    public ResponseEntity<Job> getJobById(@PathVariable Long id) {
+        Job job = jobService.getJobById(id);
+        if (job != null) {
+            return ResponseEntity.ok(job);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 } 
