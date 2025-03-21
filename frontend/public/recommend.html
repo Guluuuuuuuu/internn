@@ -610,20 +610,6 @@
             padding: 24px;
         }
 
-        .job-info {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-
-        .job-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 12px;
-        }
-
         .job-company, .job-salary {
             display: flex;
             align-items: center;
@@ -715,16 +701,14 @@
             position: fixed;
             top: 20px;
             left: 50%;
-            transform: translateX(-50%) translateY(-20px);
+            transform: translateX(-50%) translateY(-100%);
             padding: 12px 24px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 2000;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1000;
             opacity: 0;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
         .message-toast.show {
@@ -796,14 +780,30 @@
         }
 
         .job-detail-modal .job-header-info h2 {
-            font-size: 22px;
-            color: #333;
-            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             margin: 0;
         }
 
+        .job-detail-modal .job-header-info h2 .title {
+            font-size: 22px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .job-detail-modal .job-header-info h2 .tag {
+            font-size: 13px;
+            color: #666;
+            background-color: rgba(202, 68, 153, 0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: normal;
+        }
+
+        /* 删除重复的样式，只保留一个 .job-detail-modal .salary 的定义 */
         .job-detail-modal .salary {
-            color: #CA4499;
+            color: #333;  /* 黑色文字 */
             font-size: 20px;
             font-weight: 600;
             display: flex;
@@ -812,11 +812,11 @@
         }
 
         .job-detail-modal .salary::before {
-            content: '';
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23CA4499"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/></svg>') center/contain no-repeat;
+            content: '\f157';  /* Font Awesome 的 fa-yen-sign 图标 */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            font-size: 18px;
+            color: #CA4499;  /* 品牌色图标 */
         }
 
         /* 2.2 公司信息和标签 */
@@ -841,7 +841,7 @@
             display: inline-block;
             width: 16px;
             height: 16px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23CA4499"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>') center/contain no-repeat;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23CA4499"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>') center/contain no-repeat;
         }
 
         .job-detail-modal .location {
@@ -922,44 +922,196 @@
             margin-top: 20px;  /* 增加与内容的间距 */
             border-top: 1px solid #f0f0f0;
             background-color: #fafafa;
-            position: relative;
         }
 
         /* 3.1 收藏按钮 */
         .job-detail-modal .modal-footer .favorite-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: #999;
-            padding: 8px 12px;
-            height: 38px;
-            box-sizing: border-box;
+            position: relative;
+            top: -8px;  /* 向上调整 */
             display: flex;
             align-items: center;
-            position: absolute;
-            left: 20px;
-            top: 45%;  /* 稍微往上调整 */
-            transform: translateY(-50%);
+            gap: 4px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
         }
 
         /* 3.2 投递简历按钮 */
         .job-detail-modal .modal-footer .apply-btn {
-            background-color: #CA4499;
+            position: relative;
+            top: -8px;  /* 向上调整 */
+            padding: 8px 24px;
+            background: #CA4499;
             color: white;
             border: none;
-            padding: 8px 24px;
-            height: 38px;
-            box-sizing: border-box;
             border-radius: 4px;
-            font-size: 16px;
             cursor: pointer;
-            position: absolute;
-            right: 20px;
-            top: 45%;  /* 稍微往上调整 */
-            transform: translateY(-50%);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 1. 职位标题和薪资区域 */
+        .job-detail-modal .job-title {
             display: flex;
             align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .job-detail-modal .job-title h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .job-detail-modal .job-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .job-detail-modal .job-meta span {
+            padding: 2px 8px;
+            background: rgba(202, 68, 153, 0.1);
+            border-radius: 4px;
+        }
+
+        /* 2. 薪资和公司信息 */
+        .job-detail-modal .salary {
+            color: #CA4499;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .job-detail-modal .salary::before {
+            content: '\f157';  /* Font Awesome 的 fa-yen-sign 图标 */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            font-size: 18px;
+            color: #CA4499;
+        }
+
+        /* 3. 底部区域调整 */
+        .job-detail-modal .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            margin-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            background-color: #fafafa;
+        }
+
+        /* 3.1 收藏按钮 */
+        .job-detail-modal .modal-footer .favorite-btn {
+            position: relative;
+            top: 0px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* 3.2 投递简历按钮 */
+        .job-detail-modal .modal-footer .apply-btn {
+            position: relative;
+            top: 0px;
+            padding: 8px 24px;
+            background: #CA4499;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 职位标题区域布局 */
+        .job-detail-modal .title-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .job-detail-modal .title-section h3 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        /* 工作类型和学历要求标签样式 */
+        .job-detail-modal .job-tags {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .job-detail-modal .job-tag {
+            font-size: 13px;
+            color: #666;
+            background-color: rgba(202, 68, 153, 0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .job-detail-modal .job-tag::before {
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 4px;
+            font-size: 12px;
+        }
+
+        .job-detail-modal .job-tag.type::before {
+            content: '\f0b1';  /* fa-briefcase */
+            color: #CA4499;
+        }
+
+        .job-detail-modal .job-tag.education::before {
+            content: '\f19d';  /* fa-graduation-cap */
+            color: #CA4499;
+        }
+
+        /* 在 style 标签内添加这些新样式 */
+        .job-detail-modal .job-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .job-detail-modal .job-meta-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .job-detail-modal .job-meta-tag {
+            font-size: 13px;
+            color: #666;
+            background-color: rgba(202, 68, 153, 0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .job-detail-modal .job-meta-tag i {
+            font-size: 12px;
+            color: #CA4499;
         }
     </style>
 </head>
@@ -1160,16 +1312,24 @@
             <div class="modal-body">
                 <div class="job-detail-info">
                     <div class="job-header-info">
-                        <h2 id="jobTitle"></h2>
-                        <span id="jobSalary" class="salary"></span>
+                        <div class="job-title-wrapper">
+                            <h2 id="jobTitle"></h2>
+                            <div class="job-meta-tags">
+                                <span class="job-meta-tag">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span id="jobTypeTag"></span>
+                                </span>
+                                <span class="job-meta-tag">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    <span id="jobEducationTag"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="salary" id="jobSalary"></div>
                     </div>
                     <div class="company-info">
                         <span id="companyName" class="company-name"></span>
                         <span id="jobLocation" class="location"></span>
-                    </div>
-                    <div class="job-tags">
-                        <span id="jobType" class="tag"></span>
-                        <span id="jobEducation" class="tag"></span>
                     </div>
                     <div class="job-description">
                         <h4>职位描述</h4>
@@ -1890,10 +2050,10 @@
                         
                         // 更新其他可能从后端获取的信息
                         if (data.jobType) {
-                            document.getElementById('jobType').textContent = data.jobType;
+                            document.getElementById('jobTypeTag').textContent = data.jobType;
                         }
                         if (data.education) {
-                            document.getElementById('jobEducation').textContent = data.education;
+                            document.getElementById('jobEducationTag').textContent = data.education;
                         }
                     })
                     .catch(error => {
@@ -1910,6 +2070,14 @@
 
     // 打开岗位详情弹窗
     function openJobDetailModal(job) {
+        // 确保设置全局职位信息
+        window.selectedJob = {
+            id: job.id,
+            title: job.title,
+            company: job.companyName,
+            salary: job.salary
+        };
+        
         console.log("打开岗位详情弹窗:", job);
         
         // 填充弹窗内容
@@ -1917,8 +2085,8 @@
         document.getElementById('jobSalary').textContent = job.salary;
         document.getElementById('companyName').textContent = job.companyName;
         document.getElementById('jobLocation').textContent = job.location;
-        document.getElementById('jobType').textContent = job.jobType;
-        document.getElementById('jobEducation').textContent = job.education;
+        document.getElementById('jobTypeTag').textContent = job.jobType;
+        document.getElementById('jobEducationTag').textContent = job.education;
         document.getElementById('jobDescription').textContent = job.description;
         document.getElementById('jobRequirements').textContent = job.requirements;
         
@@ -1931,6 +2099,74 @@
             closeJobDetailModal();
             openApplyModal();
         };
+        
+        // 设置收藏按钮的状态和点击事件
+        const detailFavoriteBtn = document.getElementById('detailFavoriteBtn');
+        const studentId = localStorage.getItem('userId');
+        
+        if (detailFavoriteBtn && job.id) {
+            // 首先检查当前职位是否已收藏
+            const studentId = localStorage.getItem('userId');
+            
+            // 修改为正确的 API 路径
+            fetch(`http://localhost:8888/api/job-favorites/check?studentId=${studentId}&jobId=${job.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    detailFavoriteBtn.innerHTML = data.favorite ? 
+                        '<i class="fas fa-star"></i>' : 
+                        '<i class="far fa-star"></i>';
+                });
+
+            // 设置点击事件
+            detailFavoriteBtn.onclick = async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (!studentId) {
+                    showMessage("请先登录后再收藏", "error");
+                    return;
+                }
+
+                try {
+                    // 修改为正确的 API 路径
+                    const response = await fetch('http://localhost:8888/api/job-favorites/toggle', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            studentId: parseInt(studentId),
+                            jobId: parseInt(job.id)
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.favorite !== undefined) {  // 检查返回的 favorite 字段
+                        const newIcon = data.favorite ? 
+                            '<i class="fas fa-star"></i>' : 
+                            '<i class="far fa-star"></i>';
+                        
+                        detailFavoriteBtn.innerHTML = newIcon;
+                        
+                        // 同步更新职位卡片中的收藏按钮
+                        const jobCard = document.querySelector(`.job-card[data-job-id="${job.id}"]`);
+                        if (jobCard) {
+                            const cardFavoriteBtn = jobCard.querySelector('.favorite-btn');
+                            if (cardFavoriteBtn) {
+                                cardFavoriteBtn.innerHTML = newIcon;
+                            }
+                        }
+                        
+                        showMessage(data.favorite ? "收藏成功" : "取消收藏成功", "success");
+                    } else {
+                        showMessage("操作失败", "error");
+                    }
+                } catch (error) {
+                    console.error('收藏操作失败:', error);
+                    showMessage("操作失败，请稍后再试", "error");
+                }
+            };
+        }
     }
 
     // 关闭岗位详情弹窗
@@ -1939,7 +2175,7 @@
         document.body.style.overflow = '';
     }
 
-    // 直接为投递简历按钮添加点击事件
+    // 修改 setupApplyButtons 函数
     function setupApplyButtons() {
         console.log("设置申请按钮事件");
         // 获取所有投递简历按钮
@@ -1951,7 +2187,19 @@
             button.addEventListener('click', function(event) {
                 event.stopPropagation(); // 阻止事件冒泡
                 
-                // 获取岗位信息
+                // 检查是否是详情弹窗中的按钮
+                if (this.id === 'detailApplyBtn') {
+                    // 使用已存储的职位信息
+                    if (window.selectedJob) {
+                        openApplyModal();
+                    } else {
+                        console.error("找不到职位信息");
+                        showMessage("无法获取职位信息", "error");
+                    }
+                    return;
+                }
+                
+                // 职位卡片中的按钮逻辑
                 const jobCard = this.closest('.job-card');
                 if (!jobCard) {
                     console.error("找不到岗位元素");
@@ -2016,74 +2264,86 @@
         }
     }
 
-    // 确认申请
-    function confirmApply() {
+    // 修改确认申请函数
+    async function confirmApply() {
         console.log("确认申请", window.selectedJob);
         
         if (!window.selectedJob || !window.selectedJob.id) {
             showMessage("无法获取岗位信息，请刷新页面重试", "error");
             return;
         }
-        
-        // 获取当前登录的学生ID
+
         const studentId = localStorage.getItem('userId');
         if (!studentId) {
             showMessage("请先登录后再申请", "error");
             closeApplyModal();
             return;
         }
-        
-        // 调用后端API提交申请
-        fetch('http://localhost:8888/api/applications', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                studentId: parseInt(studentId),
-                jobId: parseInt(window.selectedJob.id)
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+
+        try {
+            const response = await fetch('http://localhost:8888/api/applications', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    studentId: parseInt(studentId),
+                    jobId: parseInt(window.selectedJob.id)
+                })
+            });
+
+            // 获取响应数据
+            const data = await response.json();
+            console.log('申请响应:', {
+                status: response.status,
+                data: data
+            });
+
+            // 处理不同的响应情况
+            if (response.status === 400) {
+                // 400 状态码通常表示业务逻辑错误，如已申请过
+                showMessage(data.message || "您已经申请过该岗位", "error");
+                closeApplyModal();
+            } else if (response.status === 200 && data.success) {
+                // 申请成功
                 showMessage("申请成功！", "success");
                 closeApplyModal();
             } else {
-                showMessage(data.message || "申请失败，请稍后再试", "error");
+                // 其他错误情况
+                throw new Error(data.message || "申请失败，请稍后再试");
             }
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('申请出错:', error);
-            showMessage("申请失败，请稍后再试", "error");
-        });
+            showMessage(error.message || "申请失败，请稍后再试", "error");
+        }
     }
 
-    // 显示消息提示
+    // 修改消息提示函数，使其更明显
     function showMessage(message, type = 'info') {
-        // 创建消息元素
-        const messageEl = document.createElement('div');
-        messageEl.className = `message ${type}`;
-        messageEl.innerHTML = `
-            <div class="message-content">
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : 'fa-info-circle'}"></i>
-                <span>${message}</span>
-            </div>
-        `;
+        const messageToast = document.createElement('div');
+        messageToast.className = `message-toast ${type}`;
+        messageToast.textContent = message;
         
-        // 添加到页面
-        document.body.appendChild(messageEl);
+        // 移除可能存在的旧消息
+        const oldToast = document.querySelector('.message-toast');
+        if (oldToast) {
+            oldToast.remove();
+        }
+        
+        document.body.appendChild(messageToast);
         
         // 显示动画
         setTimeout(() => {
-            messageEl.classList.add('show');
+            messageToast.classList.add('show');
         }, 10);
         
-        // 自动关闭
+        // 3秒后自动关闭
         setTimeout(() => {
-            messageEl.classList.remove('show');
+            messageToast.classList.remove('show');
             setTimeout(() => {
-                document.body.removeChild(messageEl);
+                if (messageToast.parentNode) {
+                    messageToast.parentNode.removeChild(messageToast);
+                }
             }, 300);
         }, 3000);
     }

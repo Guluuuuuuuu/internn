@@ -1,0 +1,180 @@
+/* 基于Typora的maize主题定制的Milkdown编辑器样式 */
+
+/* 编辑器整体样式 */
+.milkdown {
+  background-color: #fafafa;
+  color: #333333;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+  line-height: 26px;
+}
+
+/* 选中文本样式 */
+.milkdown .editor ::selection {
+  background: #b981d1;
+  color: white;
+}
+
+/* 段落样式 */
+.milkdown .editor p {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin: 0;
+  line-height: 26px;
+  color: black;
+}
+
+/* 标题样式 */
+.milkdown .editor h1,
+.milkdown .editor h2,
+.milkdown .editor h3,
+.milkdown .editor h4,
+.milkdown .editor h5,
+.milkdown .editor h6 {
+  margin: 0.72em 0;
+  padding: 0px;
+  font-weight: bold;
+  color: black;
+}
+
+.milkdown .editor h1 {
+  margin: 1.2em 0;
+  font-size: 2rem;
+}
+
+.milkdown .editor h2::before {
+  content: "✔";
+  font-weight: bold;
+  color: #ffb11b;
+  margin-right: 4px;
+}
+
+.milkdown .editor h2 {
+  font-size: 1.7rem;
+  margin: 1em 0;
+}
+
+.milkdown .editor h3 {
+  font-size: 1.5rem;
+}
+
+.milkdown .editor h4 {
+  font-size: 1.25rem;
+}
+
+/* 列表样式 */
+.milkdown .editor ul,
+.milkdown .editor ol {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding-left: 40px;
+  color: black;
+}
+
+.milkdown .editor ul {
+  list-style-type: disc;
+}
+
+.milkdown .editor ul ul {
+  list-style-type: square;
+}
+
+.milkdown .editor ol {
+  list-style-type: decimal;
+}
+
+/* 加粗样式 */
+.milkdown .editor strong {
+  color: #E49123;
+  font-weight: bold;
+}
+
+/* 引用样式 */
+.milkdown .editor blockquote {
+  margin-bottom: 16px;
+  margin-top: 16px;
+  padding: 10px 10px 10px 20px;
+  font-size: 0.9em;
+  background: #fff9f9;
+  border-left: 3px solid #ffb11b;
+  color: #6a737d;
+  overflow: auto;
+}
+
+/* 链接样式 */
+.milkdown .editor a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #E49123;
+  border-bottom: 1px solid #E49123;
+}
+
+/* 分割线样式 */
+.milkdown .editor hr {
+  height: 1px;
+  padding: 0;
+  border: none;
+  background-image: linear-gradient(to right, rgba(231, 93, 109, 0.3), rgba(255, 159, 150, 0.75), rgba(255, 216, 181, 0.3));
+}
+
+/* 行内代码样式 */
+.milkdown .editor code {
+  font-size: 14px;
+  color: rgb(235, 76, 55);
+  background-color: #f0f0f0;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin: 0 2px;
+}
+
+/* 代码块样式 */
+.milkdown .editor pre {
+  margin: 0 0 20px;
+  background-color: #292b35;
+  color: rgb(236, 236, 236);
+  padding: 0.3em 1em;
+  padding-top: 0.4em;
+  box-shadow: 0px 4px 9px grey;
+  border-radius: 5px;
+}
+
+/* 表格样式 */
+.milkdown .editor table {
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.milkdown .editor table tr {
+  border: 0;
+  border-top: 1px solid #ccc;
+  background-color: white;
+}
+
+.milkdown .editor table tr:nth-child(2n) {
+  background-color: #F8F8F8;
+}
+
+.milkdown .editor table th,
+.milkdown .editor table td {
+  font-size: 16px;
+  line-height: 1.5;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  text-align: left;
+}
+
+.milkdown .editor table th {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+
+/* 图片样式 */
+.milkdown .editor img {
+  display: block;
+  margin: 0 auto;
+  width: 85%;
+  max-width: 100%;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px #84A1A8;
+  border: 0px;
+} 

@@ -2,13 +2,23 @@
   <div class="internship-report">
     <div class="header">
       <h2>实习报告</h2>
-      <button class="add-btn" @click="createReport">
-        <i class="fas fa-plus"></i> 新建报告
-      </button>
+      <div class="header-actions">
+        <button class="draft-btn" @click="viewDrafts" title="草稿箱">
+          <Vue3Lottie
+            :animationData="draftBoxAnimation"
+            :height="32"
+            :width="32"
+          />
+        </button>
+        <button class="add-btn" @click="createReport">
+          <i class="fas fa-plus"></i> 新建报告
+        </button>
+      </div>
     </div>
 
     <div class="content-card">
-      <div class="report-list">
+      <!-- 报告列表 -->
+      <div class="report-list" v-if="!showEditor">
         <div v-for="report in reports" :key="report.id" class="report-card">
           <div class="report-header">
             <div class="report-info">
@@ -41,13 +51,13 @@
               <span>导师评语：{{ report.feedback }}</span>
             </div>
             <div class="actions">
-              <button class="edit-btn" v-if="report.status === 'draft'">
+              <button class="edit-btn" v-if="report.status === 'draft'" @click="editReport(report)">
                 <i class="fas fa-edit"></i> 编辑
               </button>
-              <button class="submit-btn" v-if="report.status === 'draft'">
+              <button class="submit-btn" v-if="report.status === 'draft'" @click="submitReport(report.id)">
                 <i class="fas fa-paper-plane"></i> 提交
               </button>
-              <button class="view-btn" v-if="report.status !== 'draft'">
+              <button class="view-btn" v-if="report.status !== 'draft'" @click="viewReport(report)">
                 <i class="fas fa-eye"></i> 查看
               </button>
             </div>
@@ -55,25 +65,72 @@
         </div>
       </div>
 
-      <!-- 分页 -->
-      <div class="pagination">
-        <button class="prev-btn"><i class="fas fa-chevron-left"></i></button>
-        <div class="page-numbers">
-          <span class="page-number active">1</span>
-          <span class="page-number">2</span>
-          <span class="page-number">3</span>
-          <span class="ellipsis">...</span>
-          <span class="page-number">10</span>
+      <!-- 编辑器 -->
+      <div v-else class="editor-container">
+        <div class="editor-header">
+          <button class="back-btn" @click="closeEditor">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <h3>{{ isNewReport ? '新建实习报告' : '编辑实习报告' }}</h3>
         </div>
-        <button class="next-btn"><i class="fas fa-chevron-right"></i></button>
+        
+        <!-- 使用报告信息表单组件 -->
+        <div class="editor-content">
+          <ReportFormInfo v-model="currentReport" />
+          
+          <!-- 使用 MilkdownEditor 组件 -->
+          <div class="milkdown-editor-wrapper">
+            <MilkdownEditor 
+              :value="currentReport.content"
+              @update:value="currentReport.content = $event"
+              @save="saveAsDraft"
+            />
+          </div>
+          
+          <div class="editor-actions">
+            <button class="save-btn" @click="saveAsDraft">
+              <i class="fas fa-save"></i> 保存草稿
+            </button>
+            <button class="submit-btn" @click="confirmSubmit()">
+              <i class="fas fa-paper-plane"></i> 提交报告
+            </button>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- 提交确认对话框 -->
+    <div class="confirmation-dialog" v-if="showConfirmDialog">
+      <div class="confirm-dialog">
+        <h3>确认提交报告？</h3>
+        <div class="confirm-actions">
+          <button class="cancel-btn" @click="showConfirmDialog = false">取消</button>
+          <button class="confirm-btn" @click="doSubmitReport">确认</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 系统消息 -->
+    <SystemMessage ref="systemMessage" />
   </div>
 </template>
 
 <script>
+import { Vue3Lottie } from 'vue3-lottie';
+import SystemMessage from '../common/SystemMessage.vue';
+import ReportFormInfo from '../common/ReportFormInfo.vue';
+import MilkdownEditor from '../common/MilkdownEditor.vue';
+// 使用本地动画文件
+import draftBoxAnimation from '@/assets/animations/draft-box.json';
+
 export default {
-  name: 'StudentInternshipReport',
+  name: 'InternshipReport',
+  components: {
+    Vue3Lottie,
+    SystemMessage,
+    ReportFormInfo,
+    MilkdownEditor
+  },
   data() {
     return {
       reports: [
@@ -89,12 +146,128 @@ export default {
           submitTime: '2024-03-15',
           feedback: '报告内容详实，实习期间表现优秀，继续保持！'
         }
-      ]
+      ],
+      showEditor: false,
+      isNewReport: true,
+      showConfirmDialog: false,
+      currentReport: {
+        id: null,
+        title: '',
+        company: '',
+        position: '',
+        summary: '',
+        content: '',
+        startDate: '',
+        endDate: '',
+        status: 0,
+        submitTime: null,
+        feedback: null
+      },
+      draftBoxAnimation
+    };
+  },
+  computed: {
+    formattedReports() {
+      return this.reports.map(report => {
+        return {
+          ...report,
+          statusText: this.getStatusText(report.status),
+          submitTimeText: report.submitTime || '尚未提交'
+        };
+      });
     }
   },
   methods: {
     createReport() {
-      // 实现新建报告的逻辑
+      this.isNewReport = true;
+      this.currentReport = {
+        id: null,
+        title: '',
+        company: '',
+        position: '',
+        summary: '',
+        content: '',
+        startDate: '',
+        endDate: '',
+        status: 0,
+        submitTime: null,
+        feedback: null
+      };
+      this.showEditor = true;
+    },
+    editReport(report) {
+      this.isNewReport = false;
+      this.currentReport = JSON.parse(JSON.stringify(report));
+      this.showEditor = true;
+    },
+    viewReport(report) {
+      this.isNewReport = false;
+      this.currentReport = JSON.parse(JSON.stringify(report));
+      this.showEditor = true;
+    },
+    closeEditor() {
+      this.showEditor = false;
+    },
+    saveAsDraft() {
+      // 保存草稿逻辑
+      if (!this.currentReport.title) {
+        alert('请输入报告标题');
+        return;
+      }
+      
+      // 如果是新建报告，生成一个临时ID
+      if (this.isNewReport) {
+        this.currentReport.id = Date.now();
+        this.reports.unshift(this.currentReport);
+      } else {
+        // 更新已有报告
+        const index = this.reports.findIndex(r => r.id === this.currentReport.id);
+        if (index !== -1) {
+          this.reports[index] = { ...this.currentReport };
+        }
+      }
+      
+      alert('草稿已保存');
+    },
+    confirmSubmit() {
+      // 验证表单
+      if (!this.currentReport.title || !this.currentReport.company || 
+          !this.currentReport.position || !this.currentReport.startDate || 
+          !this.currentReport.endDate || !this.currentReport.summary || 
+          !this.currentReport.content) {
+        alert('请填写完整的报告内容');
+        return;
+      }
+      
+      this.showConfirmDialog = true;
+    },
+    doSubmitReport() {
+      // 提交报告逻辑
+      this.currentReport.status = 1;
+      this.currentReport.submitTime = new Date().toLocaleString();
+      
+      const index = this.reports.findIndex(r => r.id === this.currentReport.id);
+      if (index !== -1) {
+        this.reports[index] = { ...this.currentReport };
+      } else {
+        this.currentReport.id = Date.now();
+        this.reports.unshift(this.currentReport);
+      }
+      
+      this.showConfirmDialog = false;
+      this.showEditor = false;
+      alert('报告已提交');
+    },
+    viewDrafts() {
+      alert('查看草稿箱');
+    },
+    getStatusText(status) {
+      switch (status) {
+        case 0: return '草稿';
+        case 1: return '已提交';
+        case 2: return '已批阅';
+        default: return '未知';
+      }
     }
   }
 }
@@ -118,6 +291,12 @@ export default {
   margin-bottom: 20px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .add-btn {
   padding: 10px 20px;
   background: #52c41a;
@@ -130,11 +309,30 @@ export default {
   gap: 8px;
 }
 
+.draft-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: rgba(202, 68, 153, 0.1);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.draft-btn:hover {
+  background: rgba(202, 68, 153, 0.2);
+  transform: scale(1.05);
+}
+
 .content-card {
   background: white;
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  min-height: 600px;
 }
 
 .report-list {
@@ -248,7 +446,7 @@ export default {
   gap: 10px;
 }
 
-.edit-btn, .submit-btn, .view-btn {
+.edit-btn, .submit-btn, .view-btn, .back-btn {
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
@@ -274,43 +472,142 @@ export default {
   color: #1890ff;
 }
 
-.pagination {
+.back-btn {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  justify-content: center;
+  margin-right: 10px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.editor-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.editor-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.report-basic-info {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.milkdown-editor-wrapper {
+  flex: 1;
+  min-height: 500px;
+  margin-bottom: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.editor-actions {
+  display: flex;
+  justify-content: flex-end;
   gap: 10px;
 }
 
-.page-numbers {
+.save-btn, .submit-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
   display: flex;
+  align-items: center;
   gap: 5px;
 }
 
-.page-number {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  cursor: pointer;
+.save-btn {
+  background: rgba(24, 144, 255, 0.1);
+  color: #1890ff;
 }
 
-.page-number.active {
+.submit-btn {
   background: #CA4499;
   color: white;
 }
 
-.prev-btn, .next-btn {
-  width: 32px;
-  height: 32px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: white;
-  cursor: pointer;
+.confirmation-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.confirm-dialog {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  width: 400px;
+  text-align: center;
+}
+
+.confirm-dialog h3 {
+  margin-top: 0;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.cancel-btn, .confirm-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.confirm-btn {
+  background: #CA4499;
+  color: white;
 }
 </style> 
